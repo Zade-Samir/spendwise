@@ -44,7 +44,7 @@ def create_application() -> FastAPI:
     )
 
     # CORS configuration
-    origins = [settings.FRONTEND_ORIGIN]
+    origins = [o.strip() for o in settings.FRONTEND_ORIGIN.split(",") if o.strip()]
     if settings.ENV == "development":
         origins.extend(["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"])
 
