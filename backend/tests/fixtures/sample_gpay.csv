@@ -1,0 +1,12 @@
+Date,Description,Amount,Status,Payment method,Transaction ID
+01/10/2026,Swiggy,₹320.00,Completed,Bank Account (••••1234),CICAgIC1234567
+02/10/2026,Chai Point,₹60.00,Completed,Google Pay UPI,CICAgIC2345678
+03/10/2026,Uber,₹145.00,Completed,Bank Account (••••1234),CICAgIC3456789
+04/10/2026,Blinkit,₹580.00,Completed,Google Pay UPI,CICAgIC4567890
+05/10/2026,Zepto,₹240.00,Completed,Bank Account (••••1234),CICAgIC5678901
+06/10/2026,Auto Fare,₹75.00,Completed,Google Pay UPI,CICAgIC6789012
+07/10/2026,Zomato,₹260.00,Completed,Google Pay UPI,CICAgIC7890123
+08/10/2026,Nature's Basket,₹1250.00,Completed,Bank Account (••••1234),CICAgIC8901234
+09/10/2026,Coffee Day,₹180.00,Completed,Google Pay UPI,CICAgIC9012345
+10/10/2026,Metro Smart Card Recharge,₹200.00,Completed,Google Pay UPI,CICAgIC0123456
+

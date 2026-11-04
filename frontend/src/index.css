@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-2: #F1F5F9;
+  --text: #0F172A;
+  --muted: #475569;
+  --primary: #4F46E5;
+  --success: #16A34A;
+  --warning: #D97706;
+  --danger: #DC2626;
+}
+
+.dark {
+  --bg: #0B0B12;
+  --surface: #161622;
+  --surface-2: #222234;
+  --text: #F8FAFC;
+  --muted: #94A3B8;
+  --primary: #6366F1;
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100dvh;
+  background-color: var(--bg);
+  color: var(--text);
+  overscroll-behavior-y: none;
+}
+
+/* Numeric tabular values for financial calculations */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* iOS Safe Area Utilities */
+.safe-top {
+  padding-top: max(env(safe-area-inset-top, 0px), 0.5rem);
+}
+
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.5rem);
+}
+
+/* Touch target helpers */
+.min-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Disable iOS tap highlight */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* WCAG Accessible Focus Rings */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Prevent iOS Safari auto-zoom on input focus while maintaining clean layout */
+@media screen and (max-width: 768px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Apple iOS Specular Glassmorphism & Depth */
+.ios-glass {
+  background: rgba(22, 22, 34, 0.82);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+:root:not(.dark) .ios-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.ios-card {
+  position: relative;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 2px 10px -2px rgba(0, 0, 0, 0.25);
+}
+
+:root:not(.dark) .ios-card {
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.95), 0 2px 8px -2px rgba(0, 0, 0, 0.04);
+}
+
+/* Tactile 3D press feedback with Apple spring physics */
+.ios-press {
+  transform: translateZ(0);
+  transition: transform 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.1s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ios-press:active {
+  transform: scale(0.96) translateY(1px);
+  opacity: 0.88;
+}
+
+/* Keypad tactile key with specular top-edge lighting */
+.keypad-btn {
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.09), 0 2px 4px rgba(0, 0, 0, 0.18);
+  transition: transform 0.09s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.1s ease, box-shadow 0.09s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.keypad-btn:active {
+  transform: scale(0.93) translateY(1.5px);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* Apple Spring slide-up curve */
+.spring-in {
+  animation: springSlideUp 0.38s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+@keyframes springSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Scoped Scrollbar Styling — Preserves desktop scroll affordance while keeping mobile carousels clean */
+@media (hover: none) and (pointer: coarse) {
+  body::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.scrollbar-none,
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
