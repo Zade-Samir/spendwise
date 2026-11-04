@@ -14,13 +14,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml .
-
-RUN pip install --upgrade pip && \
-    pip install ".[dev]"
-
+# Copy application code first so setuptools can resolve the 'app' package
 COPY . .
+
+# Upgrade pip and install production dependencies
+RUN pip install --upgrade pip && \
+    pip install .
 
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Automatically run alembic database migrations and bind to Render's assigned $PORT
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
