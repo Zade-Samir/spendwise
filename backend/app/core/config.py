@@ -1,3 +1,4 @@
+import urllib.parse
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -22,12 +23,24 @@ class Settings(BaseSettings):
     @field_validator("DATABASE_URL", mode="before")
     @classmethod
     def assemble_db_url(cls, v: str) -> str:
-        """Ensure DATABASE_URL always uses asyncpg driver even if standard postgresql:// is provided."""
+        """Ensure DATABASE_URL always uses asyncpg driver and asyncpg-compatible SSL parameters."""
         if isinstance(v, str):
             if v.startswith("postgres://"):
                 v = v.replace("postgres://", "postgresql+asyncpg://", 1)
             elif v.startswith("postgresql://") and not v.startswith("postgresql+"):
                 v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+            # asyncpg accepts 'ssl', NOT 'sslmode'
+            parsed = urllib.parse.urlsplit(v)
+            qs = urllib.parse.parse_qs(parsed.query)
+            if "sslmode" in qs:
+                mode = qs.pop("sslmode")[0]
+                if mode in ("require", "prefer", "allow", "verify-ca", "verify-full"):
+                    qs["ssl"] = ["require"]
+                elif mode == "disable":
+                    qs["ssl"] = ["disable"]
+                new_query = urllib.parse.urlencode(qs, doseq=True)
+                v = urllib.parse.urlunsplit(parsed._replace(query=new_query))
         return v
 
     # Security & Tokens
