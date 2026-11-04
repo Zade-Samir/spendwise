@@ -3,6 +3,17 @@ from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+VALID_ASYNCPG_QUERY_ARGS = {
+    "ssl",
+    "timeout",
+    "command_timeout",
+    "statement_cache_size",
+    "max_cached_statement_lifetime",
+    "max_cacheable_statement_size",
+    "server_settings",
+}
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env", "../.env"),
@@ -23,24 +34,33 @@ class Settings(BaseSettings):
     @field_validator("DATABASE_URL", mode="before")
     @classmethod
     def assemble_db_url(cls, v: str) -> str:
-        """Ensure DATABASE_URL always uses asyncpg driver and asyncpg-compatible SSL parameters."""
+        """Ensure DATABASE_URL uses asyncpg and strips unsupported libpq query parameters like channel_binding."""
         if isinstance(v, str):
             if v.startswith("postgres://"):
                 v = v.replace("postgres://", "postgresql+asyncpg://", 1)
             elif v.startswith("postgresql://") and not v.startswith("postgresql+"):
                 v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
 
-            # asyncpg accepts 'ssl', NOT 'sslmode'
+            # Strip non-asyncpg parameters (channel_binding, target_session_attrs, etc.)
             parsed = urllib.parse.urlsplit(v)
             qs = urllib.parse.parse_qs(parsed.query)
+
+            clean_qs: dict[str, list[str]] = {}
             if "sslmode" in qs:
                 mode = qs.pop("sslmode")[0]
-                if mode in ("require", "prefer", "allow", "verify-ca", "verify-full"):
-                    qs["ssl"] = ["require"]
-                elif mode == "disable":
-                    qs["ssl"] = ["disable"]
-                new_query = urllib.parse.urlencode(qs, doseq=True)
-                v = urllib.parse.urlunsplit(parsed._replace(query=new_query))
+                if mode != "disable":
+                    clean_qs["ssl"] = ["require"]
+            elif "ssl" in qs:
+                clean_qs["ssl"] = qs["ssl"]
+            elif any(h in parsed.netloc for h in ("neon.tech", "supabase.co", "render.com", "aws")):
+                clean_qs["ssl"] = ["require"]
+
+            for k, val in qs.items():
+                if k in VALID_ASYNCPG_QUERY_ARGS:
+                    clean_qs[k] = val
+
+            new_query = urllib.parse.urlencode(clean_qs, doseq=True)
+            v = urllib.parse.urlunsplit(parsed._replace(query=new_query))
         return v
 
     # Security & Tokens
