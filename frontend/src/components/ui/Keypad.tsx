@@ -10,6 +10,23 @@ interface KeypadProps {
   className?: string;
 }
 
+interface KeyConfig {
+  digit: string;
+  letters?: string;
+}
+
+const KEYS_1_TO_9: KeyConfig[] = [
+  { digit: '1' },
+  { digit: '2', letters: 'ABC' },
+  { digit: '3', letters: 'DEF' },
+  { digit: '4', letters: 'GHI' },
+  { digit: '5', letters: 'JKL' },
+  { digit: '6', letters: 'MNO' },
+  { digit: '7', letters: 'PQRS' },
+  { digit: '8', letters: 'TUV' },
+  { digit: '9', letters: 'WXYZ' },
+];
+
 export const Keypad: React.FC<KeypadProps> = ({
   value,
   onChange,
@@ -113,20 +130,33 @@ export const Keypad: React.FC<KeypadProps> = ({
     }
   };
 
-  const buttonClass =
-    'keypad-btn flex items-center justify-center h-13 sm:h-14 rounded-2xl bg-surface hover:bg-surface-2 text-text font-bold text-xl shadow-xs border border-surface-2 select-none focus:outline-none';
+  const circleButtonClass =
+    'keypad-btn flex flex-col items-center justify-center w-16 h-16 sm:w-[70px] sm:h-[70px] rounded-full aspect-square bg-surface hover:bg-surface-2 active:bg-surface-2/80 text-text border border-surface-2 dark:border-white/10 shadow-xs select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95 transition-all duration-100';
 
   return (
-    <div className={`grid grid-cols-3 gap-2 sm:gap-2.5 px-1 max-w-sm mx-auto w-full ${className}`}>
-      {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
+    <div
+      className={`grid grid-cols-3 justify-items-center gap-y-2.5 sm:gap-y-3.5 gap-x-5 sm:gap-x-8 max-w-[280px] sm:max-w-[310px] mx-auto w-full py-1 ${className}`}
+    >
+      {KEYS_1_TO_9.map(({ digit, letters }) => (
         <button
           key={digit}
           type="button"
           onClick={() => handleDigit(digit)}
-          className={buttonClass}
+          className={circleButtonClass}
           aria-label={`Digit ${digit}`}
         >
-          {digit}
+          <span className="text-2xl sm:text-[26px] font-medium leading-none text-text">
+            {digit}
+          </span>
+          {letters ? (
+            <span className="text-[9px] sm:text-[10px] font-bold tracking-widest text-muted/70 uppercase leading-none mt-1">
+              {letters}
+            </span>
+          ) : (
+            <span className="text-[9px] sm:text-[10px] leading-none mt-1 opacity-0 pointer-events-none select-none">
+              &nbsp;
+            </span>
+          )}
         </button>
       ))}
 
@@ -134,20 +164,27 @@ export const Keypad: React.FC<KeypadProps> = ({
       <button
         type="button"
         onClick={handleDecimal}
-        className={`${buttonClass} text-2xl pb-1`}
+        className={circleButtonClass}
         aria-label="Decimal point"
       >
-        .
+        <span className="text-2xl sm:text-[28px] font-bold leading-none text-text -mt-1">
+          .
+        </span>
       </button>
 
       {/* Zero */}
       <button
         type="button"
         onClick={() => handleDigit('0')}
-        className={buttonClass}
+        className={circleButtonClass}
         aria-label="Digit 0"
       >
-        0
+        <span className="text-2xl sm:text-[26px] font-medium leading-none text-text">
+          0
+        </span>
+        <span className="text-[10px] font-bold text-muted/70 leading-none mt-0.5">
+          +
+        </span>
       </button>
 
       {/* Backspace with long-press clear */}
@@ -158,10 +195,10 @@ export const Keypad: React.FC<KeypadProps> = ({
         onMouseUp={endLongPress}
         onTouchStart={startLongPress}
         onTouchEnd={endLongPress}
-        className={`${buttonClass} text-muted hover:text-danger active:text-danger`}
+        className={`${circleButtonClass} text-muted hover:text-danger active:text-danger`}
         aria-label="Backspace or hold to clear"
       >
-        <Delete className="w-5 h-5" />
+        <Delete className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
     </div>
   );
